@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 # If this script is not run under spyder IDE, comment the following two lines.
-from IPython import get_ipython
-get_ipython().run_line_magic('reset', '-sf')
+# from IPython import get_ipython
+# get_ipython().run_line_magic('reset', '-sf')
 
 import math
 import numpy as np
