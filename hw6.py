@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
-# from IPython import get_ipython
-# get_ipython().run_line_magic('reset', '-sf')
+from IPython import get_ipython
+get_ipython().run_line_magic('reset', '-sf')
 
 import math
 import numpy as np
 import numpy.linalg as la
-import cv2
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -38,28 +37,36 @@ X2 = np.random.multivariate_normal(mean2, sigma2, N2)
 
 # m1: mean of class 1
 # m2: mean of class 2
-m1 = np.mean(X1, axis = 0)
-m2 = np.mean(X2, axis = 0)
+m1 = np.mean(X1, axis = 0, keepdims=1)
+m2 = np.mean(X2, axis = 0, keepdims=1)
 
 # write you code here
-cov1 = np.cov(X1, rowvar=False)
-cov2 = np.cov(X2, rowvar=False)
+S1 = (X1 - m1).T @ (X1 - m1)
+S2 = (X2 - m2).T @ (X2 - m2)
+S_W = S1 + S2
 
-lambdas1, V1 = myeig(cov1, symmetric=True)
-lambdas2, V2 = myeig(cov2, symmetric=True)
+mean_diff = (m1 - m2).T
+S_B = (m1 - m2).T @ (m1 - m2)
+
+eigvals, eigvecs = myeig(np.linalg.inv(S_W) @ S_B)
+
+w = eigvecs[:, 0]
+
+w = w / np.linalg.norm(w)
+
+X1_proj = (X1 @ w).reshape(-1, 1)
+X2_proj = (X2 @ w).reshape(-1, 1)
 
 plt.figure(dpi=288)
 
-plt.plot(X1[:, 0], X1[:, 1], 'r.', label='Class 1')
-plt.plot(X2[:, 0], X2[:, 1], 'g.', label='Class 2')
+plt.plot(X1[:, 0], X1[:,1], 'r.', label='Class 1')
+plt.plot(X2[:, 0], X2[:,1], 'g.', label='Class 2')
 
 # write you code here
-scale_factor = 1
-plt.quiver(m1[0], m1[1], V1[0, 0], V1[1, 0], scale=scale_factor, scale_units='xy', angles='xy', color='red', label='PC1 (Class 1)')
-plt.quiver(m2[0], m2[1], V2[0, 0], V2[1, 0], scale=scale_factor, scale_units='xy', angles='xy', color='green', label='PC1 (Class 2)')
 
-plt.axis('equal')
-plt.xlabel('Feature 1')
-plt.ylabel('Feature 2')
-plt.legend()
+plt.plot(X1_proj * w[0], X1_proj * w[1], 'ro', alpha=0.5, label='Class 1 Proj')
+plt.plot(X2_proj * w[0], X2_proj * w[1], 'go', alpha=0.5, label='Class 2 Proj')
+
+plt.axis('equal')  
 plt.show()
+
