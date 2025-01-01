@@ -94,7 +94,7 @@ def poly_data_matrix(x: np.ndarray, n: int):
         X[:, deg] = X[:, deg - 1] * x
     return X
 
-hw5_csv = pd.read_csv('data/hw5.csv')
+hw5_csv = pd.read_csv('hw5.csv')
 hw5_dataset = hw5_csv.to_numpy(dtype = np.float64)
 
 hours = hw5_dataset[:, 0]
