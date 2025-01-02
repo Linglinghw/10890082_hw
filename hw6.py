@@ -69,4 +69,3 @@ plt.plot(X2_proj * w[0], X2_proj * w[1], 'go', alpha=0.5, label='Class 2 Proj')
 
 plt.axis('equal')  
 plt.show()
-
