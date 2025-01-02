@@ -21,22 +21,27 @@ def scale_to_range(X: np.ndarray, to_range=(0,1), byrow = False):
     
     """
     a, b = to_range
-    Y = np.zeros(X.shape)
-    # write your code here
-
     if X.ndim == 1:
-        min_val, max_val = X.min(), X.max()
-        Y = a + (X - min_val) * (b - a) / (max_val - min_val)
+        min_val = np.min(X)
+        max_val = np.max(X)
+        Y = (X - min_val) / (max_val - min_val) * (b - a) + a
     elif X.ndim == 2:
         if byrow:
+            Y = np.zeros_like(X, dtype=float)
             for i in range(X.shape[0]):
-                min_val, max_val = X[i, :].min(), X[i, :].max()
-                Y[i, :] = a + (X[i, :] - min_val) * (b - a) / (max_val - min_val)
+                min_val = np.min(X[i, :])
+                max_val = np.max(X[i, :])
+                Y[i, :] = (X[i, :] - min_val) / (max_val - min_val) * (b - a) + a
         else:
+            Y = np.zeros_like(X, dtype=float)
             for j in range(X.shape[1]):
-                min_val, max_val = X[:, j].min(), X[:, j].max()
-                Y[:, j] = a + (X[:, j] - min_val) * (b - a) / (max_val - min_val)
-    return Y
+                min_val = np.min(X[:, j])
+                max_val = np.max(X[:, j])
+                Y[:, j] = (X[:, j] - min_val) / (max_val - min_val) * (b - a) + a
+    else:
+        raise ValueError("Input array must be 1D or 2D.")
+    
+    return np.round(Y, 2)
 
 print('test case 1:')
 A = np.array([1, 2.5, 6, 4, 5])
@@ -84,7 +89,6 @@ scale_to_range(A) =>
  [0.5  0.5  0.2  0.33 0.5 ]
  [0.25 1.   1.   0.33 0.  ]]
 
-
 test case 3:
 A => 
 [[1 2 3 4 5]
@@ -95,5 +99,4 @@ scale_to_range(A, byrow=True) =>
  [1.   0.75 0.   0.25 0.5 ]
  [0.5  1.   0.75 0.   0.25]]   
 S 
-"""    
-
+"""
