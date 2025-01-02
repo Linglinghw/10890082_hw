@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-@author: htchen
 
-"""
 import numpy as np
 import numpy.linalg as la
 
