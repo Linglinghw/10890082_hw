@@ -38,7 +38,7 @@ y = np.zeros(x.shape)
 
 # square wave
 pts2 = pts // 2
-y[:pts2] = -1
+y[0:pts2] = -1
 y[pts2:] = 1
 
 # sort x
@@ -51,16 +51,18 @@ f0 = 1.0 / T0
 omega0 = 2.0 * np.pi * f0
 
 # step1: generate X=[1 cos(omega0 x) cos(omega0 2x) ... cos(omega0 nx) sin(omega0 x) sin(omega0 2x) ... sin(omega0 nx)]
-n = 10
+n = 5
 cos_terms = [np.cos(k * omega0 * x) for k in range(1, n + 1)]
 sin_terms = [np.sin(k * omega0 * x) for k in range(1, n + 1)]
 X = np.column_stack([np.ones(len(x))] + cos_terms + sin_terms)
 
 # step2: SVD of X => X=USV^T
-U, Sigma, VT = mysvd(X)
-Sigma_inv = np.linalg.pinv(Sigma)
+U, Sigma, Vt = np.linalg.svd(X, full_matrices=False)
+
 # step3: a = U @ S^-1 @ V^T @ y
-a = VT.T @ Sigma_inv @ U.T @ y
+Sigma_inv = np.diag(1 / Sigma)
+a = Vt.T @ Sigma_inv @ U.T @ y
+
 # write your code here
 
 y_bar = X @ a
@@ -70,5 +72,3 @@ plt.xlabel('x')
 plt.xlabel('y')
 plt.legend()
 plt.show()
-
-
