@@ -114,4 +114,5 @@ for r in rs:
     # 驗證 ‖A̅‖² 是否等於 sum(λ_i, i=1 to r)
     assert np.isclose(norm_A_bar_squared, sum_lambda_to_r), \
         f"Mismatch at r={r}: ‖A̅‖²={norm_A_bar_squared}, sum(λ_i)={sum_lambda_to_r}"
+    
 print("All validations passed!")
