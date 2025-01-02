@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+"""
+@author: htchen
 
+"""
 import numpy as np
 import numpy.linalg as la
 
@@ -21,14 +24,11 @@ def gram_schmidt(S1: np.ndarray):
     S2 = np.zeros((m, n))
     # write uou code here
     for j in range(n):
-        u = S1[:,j]
-        
-        for  i in range(j):
-            proj = np.dot(S2[:, i], u * S2[:,i])
+        u = S1[:, j]
+        for i in range(j):
+            proj = np.dot(S2[:, i], u) / np.dot(S2[:, i], S2[:, i]) * S2[:, i]
             u = u - proj
-        
-        S2[:,j] = u / la.norm(u)
-        
+        S2[:, j] = u / la.norm(u)
     return S2
 
 S1 = np.array([[ 7,  4,  7, -3, -9],
