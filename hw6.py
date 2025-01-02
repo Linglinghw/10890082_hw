@@ -6,9 +6,9 @@
 import math
 import numpy as np
 import numpy.linalg as la
+import cv2
 import matplotlib.pyplot as plt
 import pandas as pd
-
 
 # calculate the eigenvalues and eigenvectors of a squared matrix
 # the eigenvalues are decreasing ordered
