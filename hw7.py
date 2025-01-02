@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 # If this script is not run under spyder IDE, comment the following two lines.
-from IPython import get_ipython
-get_ipython().run_line_magic('reset', '-sf')
+# from IPython import get_ipython
+# get_ipython().run_line_magic('reset', '-sf')
 
 import numpy as np
 import numpy.linalg as la
@@ -37,17 +37,16 @@ max_iters = 500
 # cost function
 #     J(w0, w1, w2, w3) = sum(y[i] - w0 - w1 * sin(w2 * x[i] + w3))^2
 for _ in range(1, max_iters):
-    grad = np.zeros_like(w)
-    n = len(x)
-    for i in range(n):
-        error = y[i] - (w[0] + w[1] * np.sin(w[2] * x[i] + w[3]))
-        grad[0] += -2 * error
-        grad[1] += -2 * error * np.sin(w[2] * x[i] + w[3])
-        grad[2] += -2 * error * w[1] * x[i] * np.cos(w[2] * x[i] + w[3])
-        grad[3] += -2 * error * w[1] * np.cos(w[2] * x[i] + w[3])
-    grad /= n
+    y_pred = w[0] + w[1] * np.sin(w[2] * x + w[3])
+    error = y - y_pred
 
-    w -= alpha * grad
+    grad_w0 = -2 * np.sum(error)
+    grad_w1 = -2 * np.sum(error * np.sin(w[2] * x + w[3]))
+    grad_w2 = -2 * np.sum(error * w[1] * x * np.cos(w[2] * x + w[3]))
+    grad_w3 = -2 * np.sum(error * w[1] * np.cos(w[2] * x + w[3]))
+
+    gradient_of_cost = np.array([grad_w0, grad_w1, grad_w2, grad_w3])
+    w =  w - alpha * gradient_of_cost
     # remove the above pass and write your code here
     # calculate gradient of cost function by using partial derivative(使用偏導數計算梯度)
     # update rule: 
@@ -58,22 +57,19 @@ xt = np.linspace(xmin, xmax, 100)
 yt1 = w[0] + w[1] * np.sin(w[2] * xt + w[3])
 
 w = np.array([-0.1607108,  2.0808538,  0.3277537, -1.5511576])
-eps = 1e-7
+delta = 1e-5
 for _ in range(1, max_iters):
-    grad = np.zeros_like(w)
-    for j in range(len(w)):
-        w_perturb = np.copy(w)
-        w_perturb[j] += eps
-        J_plus = np.sum((y - (w_perturb[0] + w_perturb[1] * np.sin(w_perturb[2] * x + w_perturb[3]))) ** 2)
+    gradient_of_cost = np.zeros_like(w)
+    for i in range(len(w)):
+        w_temp = w.copy()
+        w_temp[i] += delta
+        cost_plus = np.sum((y - (w_temp[0] + w_temp[1] * np.sin(w_temp[2] * x + w_temp[3])))**2)
 
-        w_perturb[j] -= 2 * eps
-        J_minus = np.sum((y - (w_perturb[0] + w_perturb[1] * np.sin(w_perturb[2] * x + w_perturb[3]))) ** 2)
+        w_temp[i] -= 2 * delta
+        cost_minus = np.sum((y - (w_temp[0] + w_temp[1] * np.sin(w_temp[2] * x + w_temp[3])))**2)
 
-        grad[j] = (J_plus - J_minus) / (2 * eps)  
-    grad /= len(x)  
-    
-    w -= alpha * grad
-    
+        gradient_of_cost[i] = (cost_plus - cost_minus) / (2 * delta)
+    w =  w - alpha * gradient_of_cost
     # remove the above pass and write your code here
     # calculate gradient of cost function by using numeric method(使用數值法計算梯度)
     # update rule: 
@@ -93,4 +89,4 @@ plt.ylim([ymin,ymax])
 plt.xlabel('$x$')
 plt.ylabel('$y$')
 plt.legend()
-plt.show() 
+plt.show()
