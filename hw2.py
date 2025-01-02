@@ -48,19 +48,19 @@ A = img.astype(dtype=np.float64)
 U, Sigma, V = mysvd(A)
 VT = V.T
 
-
 def compute_energy(X: np.ndarray):
-    return np.sum(np.square(X))
+    return np.sum(X ** 2)
     # return energy of X
     # For more details on the energy of a 2D signal, see the 
     # class notebook: 內容庫/補充說明/Energy of a 2D Signal.
+    # remove pass and write your code here
+    
     
 # img_h and img_w are image's height and width, respectively
 img_h, img_w = A.shape
 # Compute SNR
 keep_r = 201
 rs = np.arange(1, keep_r)
-
 
 # compute energy of A, and save it to variable Energy_A
 energy_A = compute_energy(A)
@@ -78,22 +78,40 @@ for r in rs:
 
 # 計算snr和作圖
 # write your code here
-SNR = 10 * np.log10(energy_A / energy_N[1:])
+snr = 10 * np.log10(energy_A / energy_N[1:])
 
 plt.figure()
-plt.plot(rs, SNR)
+plt.plot(rs, snr, 'r-', label='SNR')
 plt.xlabel('r')
-plt.ylabel('SNR (dB)')
-plt.title('SNR vs. r')
-plt.grid()
+plt.ylabel('SNR')
+plt.grid(False)
+plt.ylim(10, None)
 plt.show()
 
 # --------------------------
 # verify that energy_N[r] equals the sum of lambda_i, i from r+1 to i=n,
-lambdas, _ = myeig(A.T @ A, symmetric=True)
-for r in rs:
-    noise_energy_sum = np.sum(lambdas[r:])
-    assert np.isclose(energy_N[r], noise_energy_sum), f"Mismatch at r={r}"
-print("Verification passed for all values of r.")  
 # lambda_i is the eigenvalue of A^T @ A
 # write your code here
+lambdas, _ = myeig(A.T @ A, symmetric=True)
+lambdas = np.real(lambdas)
+for r in rs:
+    # 計算 ‖N_r‖² = energy_N[r]
+    norm_Nr_squared = energy_N[r]
+
+    # 計算 sum of λ_i from i = r+1 to n
+    sum_lambda_from_r_plus_1 = np.sum(lambdas[r:])
+
+    # 驗證 ‖N_r‖² 是否等於 sum(λ_i, i=r+1 to n)
+    assert np.isclose(norm_Nr_squared, sum_lambda_from_r_plus_1), \
+        f"Mismatch at r={r}: ‖N_r‖²={norm_Nr_squared}, sum(λ_i)={sum_lambda_from_r_plus_1}"
+
+    # 計算 ‖A̅‖² = energy_A - energy_N[r]
+    norm_A_bar_squared = energy_A - energy_N[r]
+
+    # 計算 sum of λ_i from i = 1 to r
+    sum_lambda_to_r = np.sum(lambdas[:r])
+
+    # 驗證 ‖A̅‖² 是否等於 sum(λ_i, i=1 to r)
+    assert np.isclose(norm_A_bar_squared, sum_lambda_to_r), \
+        f"Mismatch at r={r}: ‖A̅‖²={norm_A_bar_squared}, sum(λ_i)={sum_lambda_to_r}"
+print("All validations passed!")
